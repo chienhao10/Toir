@@ -258,15 +258,15 @@ function Karthus:JGLogic()
     end 
   end
 
-  --[[local target = GetUnit(GetTargetOrb())
+  local target = GetUnit(GetTargetOrb())
   if not myHero.HasBuff("KarthusDefile") and CanCast(_E) and self.Use_Lc_E and GetKeyPress(self.LaneClear) > 0 and GetAllUnitAroundAnObject(myHero.Addr, self.E.range) > 3
-   and GetPercentMP(myHero.Addr) >= self.LCEMana and not IsDead(minion.Addr) then
+   and GetPercentMP(myHero.Addr) >= self.LCEMana then
     if IsValidTarget(target, self.E.range) then
           CastSpellTarget(myHero.Addr, _E)
           --__PrintTextGame("on")
     end
-  end--]]
-  --[[if CanCast(_E) and self.Use_Lc_E and (GetType(GetTargetOrb()) == 3) then
+  end
+  if not myHero.HasBuff("KarthusDefile") and CanCast(_E) and self.Use_Lc_E and (GetType(GetTargetOrb()) == 3) then
     if (GetObjName(GetTargetOrb()) ~= "PlantSatchel" and GetObjName(GetTargetOrb()) ~= "PlantHealth" and GetObjName(GetTargetOrb()) ~= "PlantVision") then
         target = GetUnit(GetTargetOrb())
         if IsValidTarget(target, self.E.range) then
@@ -276,10 +276,10 @@ function Karthus:JGLogic()
         end
       end 
     end  
-  end--]]
+  end
   self.EnemyMinions:update()
   for i ,minion in pairs(self.EnemyMinions.objects) do
-    if not self.isRactive and minion ~= 0 and CanCast(_Q) and self.Use_Lc_Q and IsValidTarget(minion,self.Q.range) and GetPercentMP(myHero.Addr) >= self.LQMana and not IsDead(minion.Addr) and minion.Type == 1 then
+    if not myHero.HasBuff("KarthusDefile") and not self.isRactive and minion ~= 0 and CanCast(_Q) and self.Use_Lc_Q and IsValidTarget(minion,self.Q.range) and GetPercentMP(myHero.Addr) >= self.LQMana and not IsDead(minion.Addr) and minion.Type == 1 then
     CastSpellToPos(minion.x,minion.z,_Q)
     end
   end
