@@ -5,7 +5,7 @@ IncludeFile("Lib\\TOIR_SDK.lua")
 Nocturne = class()
 function OnLoad()
   if GetChampName(GetMyChamp()) == "Nocturne" then
-    __PrintTextGame("<b><font color=\"#2EFEF7\">LOVETAIWAN 台湾梦魇 Nocturne</font></b> <font color=\"#ffffff\">Loaded</font>")
+    __PrintTextGame("<b><font color=\"#2EFEF7\">LOVETAIWAN 台湾夢魇 Nocturne</font></b> <font color=\"#ffffff\">Loaded</font>")
     Nocturne:Load()
   end
 end
@@ -105,14 +105,13 @@ function Nocturne:Load()
 end
 
 function Nocturne:NocturneMenu()
-  self.menu ="台湾夜曲"
+  self.menu ="台湾夢魇"
   self.Use_Combo_Q = self:MenuBool("使用 Q",true)
   self.Use_Combo_W = self:MenuBool("使用 W",true)
   self.Use_Combo_E = self:MenuBool("使用 E",true)
   self.Use_Combo_R = self:MenuBool("使用 R",false)
   self.RRange = self:MenuSliderInt("超出 X 范围 R", 1100)
-  self.OKRK = self:MenuKeyBinding("一键R杀", 84)
-  --self.RRange = self:MenuSliderInt("按 R 自动 RQE 敌人", 1100)
+  --self.OKR = self:MenuKeyBinding("一键R杀", 84)
   self.Draw_noR = self:MenuBool("显示 不R 范围",true)
   self.Draw_QER = self:MenuBool("显示 RQE 击杀提示",true)
   self.Use_Harass_Q = self:MenuBool("使用 Q",true)
@@ -135,7 +134,7 @@ end
 function Nocturne:OnProcessSpell(unit,spell)
 	if unit.IsEnemy and self.intspell[spell.Name] and IsValidTarget(unit, self.E.range) and CanCast(_E) and self.Use_Int_E then
 		CastSpellTarget(unit.Addr, _E)
-        __PrintTextGame("E Int")
+        --__PrintTextGame("E Int")
 	end
     if unit.IsEnemy and self.Use_Combo_W and self.wspell[spell.Name] and IsValidTarget(unit, self.Q.Range)
    then
@@ -156,7 +155,7 @@ function Nocturne:OnDraw()
         end
 	end
 
-    if self.Draw_noR and self.R.Isready then
+    if self.Draw_noR and self.R:IsReady() then
         DrawCircleGame(myHero.x , myHero.y, myHero.z, self.RRange, Lua_ARGB(0, 255, 191,0))
     end  
 
@@ -191,8 +190,7 @@ function Nocturne:OnDrawMenu()
       self.Use_Combo_E = Menu_Bool("使用 E",self.Use_Combo_E,self.menu)
       self.Use_Combo_R = Menu_Bool("使用 R",self.Use_Combo_R,self.menu)
       self.RRange = Menu_SliderInt("超出 X 范围 R", self.RRange, 0, 4600, self.menu)
-      self.OKRK = Menu_KeyBinding("一键R杀",self.OKRK,self.menu)
-      --self.RRange = self:MenuSliderInt("按 R 自动 RQE 敌人", 1100)
+      --self.OKR = Menu_KeyBinding("一键R杀",self.OKR,self.menu)
       Menu_End()
     end
     if Menu_Begin("骚扰菜单") then
@@ -251,7 +249,7 @@ function Nocturne:QELogic()
     if CanCast(_Q) and IsValidTarget(Enemy, self.Q.range) and self.Use_Harass_Q then
         local QPosition, HitChance, Position = pred:GetCircularCastPosition(Enemy, self.Q.delay, self.Q.width, self.Q.range, self.Q.speed, myHero, false)
         if HitChance >= 2 then
-            __PrintTextGame("harq")
+            --__PrintTextGame("harq")
 			CastSpellToPos(QPosition.x, QPosition.z, _Q)
         end
     end 
@@ -340,10 +338,9 @@ end
 function Nocturne:OKRK()
     local TargetR = GetTargetSelector(self.R.range)
     if TargetR ~= nil and IsValidTarget(TargetR.Addr, self.R.range) and GetDamage("R", TargetR) + GetDamage("Q", TargetR) + GetDamage("E", TargetR) > TargetR.HP then
-        targetR = GetAIHero(TargetR.Addr)
+        targetR = GetAIHero(TargetR)
         if CanCast(_R) and CanCast(_Q) and CanCast(_E) then
             CastSpellTarget(targetR.Addr, _R)
-            __PrintTextGame("goman")
             self.QLogic()
             self.ELogic()
 		end
@@ -354,9 +351,9 @@ function Nocturne:GapClose()
     for i,enm in pairs(GetEnemyHeroes()) do
         if enm ~= nil and CanCast(_E) then
             local hero = GetAIHero(enm)
-            local TargetDashing, CanHitDashing, DashPosition = pred:IsDashing(hero, self.E.delay, self.E.width, self.E.speed, myHero, false)
+            local TargetDashing, CanHitDashing, DashPosition = pred:IsDashing(hero, 0.09, 65, 2000, myHero, false)
             if DashPosition ~= nil and GetDistance(DashPosition) <= self.E.range then
-                CastSpellToPos(DashPosition.x,DashPosition.z,_E)
+                CastSpellTarget(hero.Addr,_E)
             end
         end
     end
@@ -404,7 +401,7 @@ function Nocturne:OnTick()
         self:JGLogic()
     end
   
-  if GetKeyPress(self.OKRK) > 0 then
+  --[[if GetKeyPress(self.OKR) > 0 then
       self:OKRK()
-  end
+  end--]]
 end
