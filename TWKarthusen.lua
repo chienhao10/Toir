@@ -133,7 +133,7 @@ function Karthus:OnDrawMenu()
       self.Evade_R = Menu_Bool("No Evade During R",self.Evade_R,self.menu)
       self.AntiGapclose = Menu_Bool("Anti-Gap W",self.AntiGapclose,self.menu)
       self.Draw_Rs = Menu_Bool("Show Manual R Noti",self.Draw_Rs,self.menu)
-      self.Rsafe = Menu_SliderInt("Show Manual R Noti", self.Rsafe, 0, 9000, self.menu)
+      self.Rsafe = Menu_SliderInt("Safe Range R", self.Rsafe, 0, 9000, self.menu)
       Menu_End()
       end
    if Menu_Begin("Keys") then
