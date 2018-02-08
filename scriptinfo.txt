@@ -1,0 +1,4 @@
+https://raw.githubusercontent.com/chienhao10/Toir/master/TaiwanNocturneCN.lua#EB86101089D2AADCBE8880656FDC241F#Script
+https://raw.githubusercontent.com/chienhao10/Toir/master/TaiwanNocturne.lua#E6AC0AC2845700B98E6C6FF77D1B55CF#Script
+https://raw.githubusercontent.com/chienhao10/Toir/master/TaiwanKarthusCN.lua#704F269B00A8A6A5822677CCA11078BF#Script
+https://raw.githubusercontent.com/chienhao10/Toir/master/TaiwanKarthus.lua#6933670EE2F112C1849ECAA5F6901D09#Script
