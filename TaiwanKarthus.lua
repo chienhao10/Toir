@@ -1,10 +1,11 @@
---SDK，屏蔽普工等级
+--To DO：disable aa/sivir e
+--SDK
 IncludeFile("Lib\\TOIR_SDK.lua")
 --Check Champion
 Karthus = class()
 function OnLoad()
   if GetChampName(GetMyChamp()) == "Karthus" then
-    __PrintTextGame("<b><font color=\"#2EFEF7\">LOVETAIWAN 台湾死哥 Karthus</font></b> <font color=\"#ffffff\">Loaded</font>")
+    __PrintTextGame("<b><font color=\"#2EFEF7\">LOVETAIWAN 台湾死哥 Karthus</font></b> <font color=\"#ffffff\"> </font>")
     Karthus:Req()
   end
 end
@@ -14,6 +15,7 @@ function Karthus:Req()
   --HPred = HPrediction()
   SetLuaCombo(true)
   SetLuaLaneClear(true)
+  SetPrintErrorLog(false)
   self.JungleMinions = minionManager(MINION_JUNGLE, 2000, myHero, MINION_SORT_HEALTH_ASC)
   self.EnemyMinions = minionManager(MINION_ENEMY, 2000, myHero, MINION_SORT_HEALTH_ASC)
   self.menu_ts = TargetSelector(1750, 0, myHero, true, true, true)
@@ -69,11 +71,12 @@ function Karthus:OnProcessSpell(unit,spell)
 
 function Karthus:OnDraw()
 	for i,hero in pairs(GetEnemyHeroes()) do
-		if IsValidTarget(hero, 9000) then
+		if IsValidTarget(hero, 10000) then
 			target = GetAIHero(hero)
 			if IsValidTarget(target.Addr, self.Range) and GetDamage("R", target) > target.HP then
 				local a,b = WorldToScreen(target.x, target.y, target.z)
         DrawTextD3DX(a, b, "R CAN KILL!", Lua_ARGB(255, 255, 0, 10))
+        __PrintTextGame("<font color=\"#DC143C\">Press R To Kill!</font>")
 				--__PrintDebug(tostring(GetAllBuffNameActive(target.Addr)))
 			end
       if IsValidTarget(target.Addr, self.Range) and GetDamage("R", target) > target.HP and self.Draw_Rs then
@@ -246,7 +249,7 @@ function Karthus:RLogic()
 end
 
 function Karthus:JGLogic()
-  if CanCast(_Q) and self.Use_Lc_Q and (GetType(GetTargetOrb()) == 3) then
+  if CanCast(_Q) and self.Use_Lc_Q and (GetType(GetTargetOrb()) == 3) and GetPercentMP(myHero.Addr) >= self.LQMana then
     if (GetObjName(GetTargetOrb()) ~= "PlantSatchel" and GetObjName(GetTargetOrb()) ~= "PlantHealth" and GetObjName(GetTargetOrb()) ~= "PlantVision") then
         target = GetUnit(GetTargetOrb())
         if IsValidTarget(target, self.Q.range) then
@@ -258,15 +261,15 @@ function Karthus:JGLogic()
     end 
   end
 
-  --[[local target = GetUnit(GetTargetOrb())
+  local target = GetUnit(GetTargetOrb())
   if not myHero.HasBuff("KarthusDefile") and CanCast(_E) and self.Use_Lc_E and GetKeyPress(self.LaneClear) > 0 and GetAllUnitAroundAnObject(myHero.Addr, self.E.range) > 3
-   and GetPercentMP(myHero.Addr) >= self.LCEMana and not IsDead(minion.Addr) then
+   and GetPercentMP(myHero.Addr) >= self.LCEMana then
     if IsValidTarget(target, self.E.range) then
           CastSpellTarget(myHero.Addr, _E)
           --__PrintTextGame("on")
     end
-  end--]]
-  --[[if CanCast(_E) and self.Use_Lc_E and (GetType(GetTargetOrb()) == 3) then
+  end
+  if not myHero.HasBuff("KarthusDefile") and CanCast(_E) and self.Use_Lc_E and (GetType(GetTargetOrb()) == 3) and GetPercentMP(myHero.Addr) >= self.LCEMana then
     if (GetObjName(GetTargetOrb()) ~= "PlantSatchel" and GetObjName(GetTargetOrb()) ~= "PlantHealth" and GetObjName(GetTargetOrb()) ~= "PlantVision") then
         target = GetUnit(GetTargetOrb())
         if IsValidTarget(target, self.E.range) then
@@ -276,10 +279,10 @@ function Karthus:JGLogic()
         end
       end 
     end  
-  end--]]
+  end
   self.EnemyMinions:update()
   for i ,minion in pairs(self.EnemyMinions.objects) do
-    if not self.isRactive and minion ~= 0 and CanCast(_Q) and self.Use_Lc_Q and IsValidTarget(minion,self.Q.range) and GetPercentMP(myHero.Addr) >= self.LQMana and not IsDead(minion.Addr) and minion.Type == 1 then
+    if not myHero.HasBuff("KarthusDefile") and not self.isRactive and minion ~= 0 and CanCast(_Q) and self.Use_Lc_Q and IsValidTarget(minion,self.Q.range) and GetPercentMP(myHero.Addr) >= self.LQMana and not IsDead(minion.Addr) and minion.Type == 1 then
     CastSpellToPos(minion.x,minion.z,_Q)
     end
   end
