@@ -1,4 +1,3 @@
---To DO：disable aa/sivir e
 --SDK
 IncludeFile("Lib\\TOIR_SDK.lua")
 --Check Champion
@@ -6,11 +5,11 @@ Karthus = class()
 function OnLoad()
   if GetChampName(GetMyChamp()) == "Karthus" then
     __PrintTextGame("<b><font color=\"#2EFEF7\">LOVETAIWAN 台湾死哥 Karthus</font></b> <font color=\"#ffffff\"> </font>")
-    Karthus:Req()
+    Karthus:Init()
   end
 end
 
-function Karthus:Req()
+function Karthus:Init()
   pred = VPrediction(true)
   --HPred = HPrediction()
   SetLuaCombo(true)
@@ -40,7 +39,6 @@ function Karthus:Req()
   self:KarthusMenu()
 end
 
-
 function Karthus:KarthusMenu()
   self.menu ="Taiwan Karthus"
   self.Use_Combo_Q = self:MenuBool("Combo Q",true)
@@ -68,8 +66,8 @@ function Karthus:OnProcessSpell(unit,spell)
       SetEvade(true)
       end
   end
-
-function Karthus:OnDraw()
+  
+  function Karthus:OnDraw()
 	for i,hero in pairs(GetEnemyHeroes()) do
 		if IsValidTarget(hero, 10000) then
 			target = GetAIHero(hero)
@@ -148,6 +146,62 @@ function Karthus:OnDrawMenu()
   end
 end
 
+function Karthus:MenuBool(stringKey, bool)
+    return ReadIniBoolean(self.menu, stringKey, bool)
+end
+
+function Karthus:MenuSliderInt(stringKey, valueDefault)
+    return ReadIniInteger(self.menu, stringKey, valueDefault)
+end
+
+function Karthus:MenuKeyBinding(stringKey, valueDefault)
+    return ReadIniInteger(self.menu, stringKey, valueDefault)
+end
+
+function Karthus:OnUpdate()
+  self:RLogic()
+  self:AutoE() 
+  self:AutoQ() 
+  self:Eoff()
+  if isRactive and self.Evade_R then
+    SetEvade(true)
+    end  
+end 
+
+function Karthus:OnTick()
+  if IsDead(myHero.Addr) or IsTyping() or IsDodging() then return end
+
+  if self.AntiGapclose then
+  self:GapClose()
+  end
+	
+
+  if GetKeyPress(self.Combo) > 0 then
+      self:QLogic()
+      self:WLogic()
+      self:ELogic()
+   end
+
+  if GetKeyPress(self.LaneClear) > 0 then
+      self:JGLogic()
+   end
+   if self.isRactive and self.Evade_R then
+        SetEvade(true)
+      end
+end
+
+function Karthus:MenuBool(stringKey, bool)
+    return ReadIniBoolean(self.menu, stringKey, bool)
+end
+
+function Karthus:MenuSliderInt(stringKey, valueDefault)
+    return ReadIniInteger(self.menu, stringKey, valueDefault)
+end
+
+function Karthus:MenuKeyBinding(stringKey, valueDefault)
+    return ReadIniInteger(self.menu, stringKey, valueDefault)
+end
+
 function Karthus:QLogic()
     local UseQ = GetTargetSelector(self.Q.range)
     Enemy = GetAIHero(UseQ)
@@ -170,20 +224,6 @@ function Karthus:AutoQ()
     end 
 end 
 
---[[function Karthus:QLogic()
-	local pTarg   = GetTargetSelector(1175, 1);
-	local castPosX, castPosZ, unitPosX, unitPosZ, hitChance, _aoeTargetsHitCount = GetPredictionCore(pTarg, 0, 1.0, 140, 1175, 150, self.x, self.z, true, false, 1, 0, 2, 0, 0, 5)
-	DrawCircleGame(castPosX, 0, castPosZ, 70, Lua_ARGB(185, 130, 180, 0))	
-	DrawCircleGame(unitPosX, 0, unitPosZ, 50, Lua_ARGB(255, 250, 250, 0))	
-	if CanCast(_Q) and pTarg and hitChance >= 6 then
-		--KPos pos(outPred.GetCastPosition().x, outPred.GetCastPosition().y, outPred.GetCastPosition().z);
-		--__PrintDebug(' hitChance ' ..tostring(hitChance))
-		if GetKeyPress(32) == 1 or GetKeyPress(67) == 1 or GetKeyPress(86) == 1 then
-			CastSpellToPos(castPosX, castPosZ, _Q)
-		end
-	end
-end--]]
-
 function Karthus:WLogic()
   local target = GetTargetSelector(self.W.range, 0)
   if not self.isRactive and target ~= 0 and self.Use_Combo_W and CanCast(_W) then
@@ -192,8 +232,8 @@ function Karthus:WLogic()
       local CastPosition, HitChance, Position = pred:GetLineCastPosition(tar,self.W.delay,self.W.width,self.W.range,self.W.speed,myHero,false)
       --local WPos, WHitChance = HPred:GetPredict(self.HPred_W_M, tar, myHero)
       if HitChance >= 2 then
-      --self.W:Cast(target)
-        CastSpellToPos(CastPosition.x,CastPosition.z,_W)
+      self.W:Cast(target)
+        --CastSpellToPos(CastPosition.x,CastPosition.z,_W)
       end
     end
   end
@@ -304,48 +344,4 @@ function Karthus:GapClose()
             end
         end
     end
-end
-
-function Karthus:MenuBool(stringKey, bool)
-    return ReadIniBoolean(self.menu, stringKey, bool)
-end
-
-function Karthus:MenuSliderInt(stringKey, valueDefault)
-    return ReadIniInteger(self.menu, stringKey, valueDefault)
-end
-
-function Karthus:MenuKeyBinding(stringKey, valueDefault)
-    return ReadIniInteger(self.menu, stringKey, valueDefault)
-end
-
-function Karthus:OnUpdate()
-  self:RLogic()
-  self:AutoE() 
-  self:AutoQ() 
-  self:Eoff()
-  if isRactive and self.Evade_R then
-    SetEvade(true)
-    end  
-end 
-
-function Karthus:OnTick()
-  if IsDead(myHero.Addr) or IsTyping() or IsDodging() then return end
-
-  if self.AntiGapclose then
-  self:GapClose()
-  end
-	
-
-  if GetKeyPress(self.Combo) > 0 then
-      self:QLogic()
-      self:WLogic()
-      self:ELogic()
-   end
-
-  if GetKeyPress(self.LaneClear) > 0 then
-      self:JGLogic()
-   end
-   if self.isRactive and self.Evade_R then
-        SetEvade(true)
-      end
 end
